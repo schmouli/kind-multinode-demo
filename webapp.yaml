@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sample-web  # Updated deployment name
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: sample-web  # Updated label
+  template:
+    metadata:
+      labels:
+        app: sample-web  # Updated label
+    spec:
+      containers:
+      - name: sample-web  # Updated container name
+        image: localhost:5001/sample-web:latest
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sample-web-svc  # Updated service name
+spec:
+  selector:
+    app: sample-web  # Updated label to match pods
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http
+  type: NodePort
