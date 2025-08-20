@@ -23,6 +23,16 @@ kubectl wait --for=condition=ready pod -l app=sample-web --timeout=120s
 
 # Port-forward in the background
 echo "🔗 Setting up port-forwarding in the background..."
-kubectl port-forward deployment/sample-web 8070:80 > /dev/null 2>&1 &
+#!/bin/bash
 
-echo "🎉 All set! Visit http://localhost:8070 to see your app."
+# Find the pod name dynamically
+POD_NAME=$(kubectl get pods --no-headers -o custom-columns=":metadata.name" | grep ^sample-web | head -n 1)
+
+# Port-forward to the pod
+if [ -n "$POD_NAME" ]; then
+  echo "🔗 Setting up port-forwarding for pod: $POD_NAME"
+  kubectl port-forward "$POD_NAME" 8070:80 > /dev/null 2>&1 &
+  echo "🎉 All set! Visit http://localhost:8070 to see your app."
+else
+  echo "❌ No pod found with name starting with 'sample-web'."
+fi
